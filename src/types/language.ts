@@ -32,7 +32,7 @@ export const translations: Record<Language, Translations> = {
     team2: 'Them',
     enterScore: 'Enter score',
     addRound: 'Add Round',
-    reset: 'Reset',
+    reset: 'Reset Game',
     roundsHistory: 'Rounds History',
     round: 'Round',
     noRoundsYet: 'No rounds yet. Start by entering scores above!',
