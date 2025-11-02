@@ -1,15 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Trophy, Plus, RotateCcw, Share2, Undo2, Target } from 'lucide-react';
-import { supabase, Round } from './lib/supabase';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { Language, translations } from './types/language';
 
+interface Round {
+  id: string;
+  round_number: number;
+  team1_score: number;
+  team2_score: number;
+}
+
 function App() {
-  const [gameId] = useState(() => crypto.randomUUID());
   const [rounds, setRounds] = useState<Round[]>([]);
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
 
   const t = translations[language];
@@ -23,26 +27,7 @@ function App() {
   const team1Progress = Math.min((team1Total / 250) * 100, 100);
   const team2Progress = Math.min((team2Total / 250) * 100, 100);
 
-  useEffect(() => {
-    loadRounds();
-  }, []);
-
-  const loadRounds = async () => {
-    const { data, error } = await supabase
-      .from('rounds')
-      .select('*')
-      .eq('game_id', gameId)
-      .order('round_number', { ascending: true });
-
-    if (error) {
-      console.error('Error loading rounds:', error);
-      return;
-    }
-
-    setRounds(data || []);
-  };
-
-  const addRound = async () => {
+  const addRound = () => {
     if (!team1Input || !team2Input) return;
 
     const team1Score = parseInt(team1Input);
@@ -51,73 +36,27 @@ function App() {
     if (isNaN(team1Score) || isNaN(team2Score)) return;
     if (gameEnded) return;
 
-    setIsLoading(true);
-
-    const newRound = {
-      game_id: gameId,
+    const newRound: Round = {
+      id: crypto.randomUUID(),
       round_number: rounds.length + 1,
       team1_score: team1Score,
       team2_score: team2Score,
     };
 
-    const { data, error } = await supabase
-      .from('rounds')
-      .insert([newRound])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error adding round:', error);
-      setIsLoading(false);
-      return;
-    }
-
-    setRounds([...rounds, data]);
+    setRounds([...rounds, newRound]);
     setTeam1Input('');
     setTeam2Input('');
-    setIsLoading(false);
   };
 
-  const resetGame = async () => {
-    setIsLoading(true);
-
-    const { error } = await supabase
-      .from('rounds')
-      .delete()
-      .eq('game_id', gameId);
-
-    if (error) {
-      console.error('Error resetting game:', error);
-      setIsLoading(false);
-      return;
-    }
-
+  const resetGame = () => {
     setRounds([]);
     setTeam1Input('');
     setTeam2Input('');
-    setIsLoading(false);
   };
 
-  const goBackOneRound = async () => {
+  const goBackOneRound = () => {
     if (rounds.length === 0) return;
-
-    setIsLoading(true);
-
-    const lastRound = rounds[rounds.length - 1];
-
-    const { error } = await supabase
-      .from('rounds')
-      .delete()
-      .eq('id', lastRound.id);
-
-    if (error) {
-      console.error('Error removing round:', error);
-      setIsLoading(false);
-      return;
-    }
-
     setRounds(rounds.slice(0, -1));
-    setIsLoading(false);
   };
 
   const shareResults = () => {
@@ -228,7 +167,7 @@ function App() {
               value={team1Input}
               onChange={(e) => setTeam1Input(e.target.value)}
               onKeyPress={handleKeyPress}
-              disabled={gameEnded || isLoading}
+              disabled={gameEnded}
               placeholder={t.enterScore}
               className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-lg disabled:bg-slate-50 disabled:cursor-not-allowed transition-colors"
             />
@@ -244,7 +183,7 @@ function App() {
               value={team2Input}
               onChange={(e) => setTeam2Input(e.target.value)}
               onKeyPress={handleKeyPress}
-              disabled={gameEnded || isLoading}
+              disabled={gameEnded}
               placeholder={t.enterScore}
               className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-lg disabled:bg-slate-50 disabled:cursor-not-allowed transition-colors"
             />
@@ -254,7 +193,7 @@ function App() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <button
             onClick={addRound}
-            disabled={gameEnded || isLoading || !team1Input || !team2Input}
+            disabled={gameEnded || !team1Input || !team2Input}
             className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl font-semibold text-base hover:from-blue-700 hover:to-blue-800 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <Plus className="w-5 h-5" />
@@ -263,7 +202,7 @@ function App() {
 
           <button
             onClick={goBackOneRound}
-            disabled={isLoading || rounds.length === 0}
+            disabled={rounds.length === 0}
             className="bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold text-base hover:bg-orange-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <Undo2 className="w-5 h-5" />
@@ -272,7 +211,7 @@ function App() {
 
           <button
             onClick={shareResults}
-            disabled={isLoading || rounds.length === 0}
+            disabled={rounds.length === 0}
             className="bg-green-600 text-white px-6 py-4 rounded-xl font-semibold text-base hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <Share2 className="w-5 h-5" />
@@ -281,7 +220,7 @@ function App() {
 
           <button
             onClick={resetGame}
-            disabled={isLoading || rounds.length === 0}
+            disabled={rounds.length === 0}
             className="bg-slate-600 text-white px-6 py-4 rounded-xl font-semibold text-base hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-5 h-5" />
