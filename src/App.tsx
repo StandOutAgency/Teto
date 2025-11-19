@@ -249,7 +249,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {rounds.map((round) => (
+                  {[...rounds].reverse().map((round) => (
                     <tr key={round.id} className="hover:bg-slate-50 transition-colors">
                       <td className={`px-6 py-4 text-sm font-medium text-slate-900 ${isRTL ? 'text-right' : 'text-left'}`}>
                         {t.round} {round.round_number}
