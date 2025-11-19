@@ -101,7 +101,7 @@ function App() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-2 mt-12">
             <Trophy className="w-10 h-10 text-amber-500" />
-            <h1 className="text-6xl font-extrabold text-slate-900">
+            <h1 className="text-6xl font-bold text-slate-900">
               {t.title}
             </h1>
           </div>
