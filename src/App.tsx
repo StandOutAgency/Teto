@@ -82,9 +82,9 @@ function App() {
   };
 
   const getScoreColor = (team: 1 | 2) => {
-    if (team1Total === team2Total) return 'text-emerald-400';
-    if (team === 1) return team1Total > team2Total ? 'text-emerald-400' : 'text-rose-400';
-    return team2Total > team1Total ? 'text-emerald-400' : 'text-rose-400';
+    if (team1Total === team2Total) return 'text-emerald-600';
+    if (team === 1) return team1Total > team2Total ? 'text-emerald-600' : 'text-red-600';
+    return team2Total > team1Total ? 'text-emerald-600' : 'text-red-600';
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -94,123 +94,107 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
       <LanguageSwitcher currentLanguage={language} onLanguageChange={setLanguage} />
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-4 mb-3 mt-12">
-            <div className="p-3 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
-              <Trophy className="w-12 h-12 text-white" />
-            </div>
-            <h1 className="text-7xl font-black bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent drop-shadow-lg tracking-tight">
+      <div className="container mx-auto px-4 py-8 max-w-5xl flex-1">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-2 mt-12"> 
+            <Trophy className="w-10 h-10 text-amber-500" />
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
               {t.title}
             </h1>
           </div>
-          <p className="text-base text-slate-400 mt-3 font-medium">{t.rulesMessage}</p>
+          <p className="text-sm text-slate-500 mt-2">{t.rulesMessage}</p>
         </div>
 
         {gameEnded && winner && (
-          <div className="relative overflow-hidden bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 rounded-3xl p-8 mb-10 text-center shadow-2xl border-2 border-amber-300">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.3),transparent)]" />
-            <div className="relative">
-              <div className="inline-block p-4 bg-white/20 backdrop-blur-sm rounded-2xl mb-4">
-                <Trophy className="w-20 h-20 text-white drop-shadow-lg" />
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-4xl font-black text-white drop-shadow-md">{winner === 1 ? t.team1 : t.team2} {t.winMessage}</h2>
-                <p className="text-xl font-semibold text-white/95">
-                  {t.finalScore}: {team1Total} - {team2Total}
-                </p>
-              </div>
+          <div className="bg-gradient-to-r from-amber-400 to-amber-500 text-white rounded-2xl p-6 mb-8 text-center shadow-xl">
+            <Trophy className="w-16 h-16 mx-auto mb-3" />
+            <div className="space-y-1">
+              <h2 className="text-3xl font-bold">{winner === 1 ? t.team1 : t.team2} {t.winMessage}</h2>
+              <p className="text-amber-50">
+                {t.finalScore}: {team1Total} - {team2Total}
+              </p>
             </div>
           </div>
         )}
 
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-slate-700/50 mb-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.1),transparent)]" />
-          <div className="relative">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-slate-200">{t.progress}</h3>
-              <div className="flex items-center gap-2 text-sm text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-full">
-                <Target className="w-4 h-4" />
-                <span className="font-semibold">{t.target}</span>
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-slate-700">{t.progress}</h3>
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Target className="w-4 h-4" />
+              <span>{t.target}</span>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-slate-700">{t.team1}</span>
+                <span className={`text-sm font-bold ${getScoreColor(1)}`}>{team1Total} / 250</span>
+              </div>
+              <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-500 ${team1Total > team2Total ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-red-600'}`}
+                  style={{ width: `${team1Progress}%` }}
+                />
               </div>
             </div>
-            <div className="space-y-6">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-bold text-slate-300">{t.team1}</span>
-                  <span className={`text-base font-black ${getScoreColor(1)} drop-shadow-md`}>{team1Total} / 250</span>
-                </div>
-                <div className="h-5 bg-slate-900/50 rounded-full overflow-hidden border border-slate-700/50 shadow-inner">
-                  <div
-                    className={`h-full transition-all duration-700 ease-out ${team1Total > team2Total ? 'bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/50' : 'bg-gradient-to-r from-rose-400 via-rose-500 to-rose-600 shadow-lg shadow-rose-500/50'}`}
-                    style={{ width: `${team1Progress}%` }}
-                  />
-                </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-slate-700">{t.team2}</span>
+                <span className={`text-sm font-bold ${getScoreColor(2)}`}>{team2Total} / 250</span>
               </div>
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-bold text-slate-300">{t.team2}</span>
-                  <span className={`text-base font-black ${getScoreColor(2)} drop-shadow-md`}>{team2Total} / 250</span>
-                </div>
-                <div className="h-5 bg-slate-900/50 rounded-full overflow-hidden border border-slate-700/50 shadow-inner">
-                  <div
-                    className={`h-full transition-all duration-700 ease-out ${team2Total > team1Total ? 'bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/50' : 'bg-gradient-to-r from-rose-400 via-rose-500 to-rose-600 shadow-lg shadow-rose-500/50'}`}
-                    style={{ width: `${team2Progress}%` }}
-                  />
-                </div>
+              <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-500 ${team2Total > team1Total ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-red-600'}`}
+                  style={{ width: `${team2Progress}%` }}
+                />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-10">
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border border-slate-700/50 hover:border-slate-600/50 transition-all">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.1),transparent)]" />
-            <div className="relative">
-              <h2 className="text-2xl font-black text-slate-200 mb-4 tracking-wide">{t.team1}</h2>
-              <div className={`text-7xl font-black mb-6 ${getScoreColor(1)} transition-all duration-300 drop-shadow-2xl`}>
-                {team1Total}
-              </div>
-              <input
-                type="number"
-                value={team1Input}
-                onChange={(e) => setTeam1Input(e.target.value)}
-                onKeyPress={handleKeyPress}
-                disabled={gameEnded}
-                placeholder={t.enterScore}
-                className="w-full px-5 py-4 bg-slate-900/50 border-2 border-slate-700 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-lg text-slate-200 placeholder-slate-500 disabled:bg-slate-900/30 disabled:cursor-not-allowed transition-all font-semibold"
-              />
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
+            <h2 className="text-2xl font-bold text-slate-800 mb-3">{t.team1}</h2>
+            <div className={`text-6xl font-bold mb-4 ${getScoreColor(1)} transition-colors`}>
+              {team1Total}
             </div>
+            <input
+              type="number"
+              value={team1Input}
+              onChange={(e) => setTeam1Input(e.target.value)}
+              onKeyPress={handleKeyPress}
+              disabled={gameEnded}
+              placeholder={t.enterScore}
+              className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-lg disabled:bg-slate-50 disabled:cursor-not-allowed transition-colors"
+            />
           </div>
 
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl p-10 shadow-2xl border border-slate-700/50 hover:border-slate-600/50 transition-all">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.1),transparent)]" />
-            <div className="relative">
-              <h2 className="text-2xl font-black text-slate-200 mb-4 tracking-wide">{t.team2}</h2>
-              <div className={`text-7xl font-black mb-6 ${getScoreColor(2)} transition-all duration-300 drop-shadow-2xl`}>
-                {team2Total}
-              </div>
-              <input
-                type="number"
-                value={team2Input}
-                onChange={(e) => setTeam2Input(e.target.value)}
-                onKeyPress={handleKeyPress}
-                disabled={gameEnded}
-                placeholder={t.enterScore}
-                className="w-full px-5 py-4 bg-slate-900/50 border-2 border-slate-700 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-lg text-slate-200 placeholder-slate-500 disabled:bg-slate-900/30 disabled:cursor-not-allowed transition-all font-semibold"
-              />
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
+            <h2 className="text-2xl font-bold text-slate-800 mb-3">{t.team2}</h2>
+            <div className={`text-6xl font-bold mb-4 ${getScoreColor(2)} transition-colors`}>
+              {team2Total}
             </div>
+            <input
+              type="number"
+              value={team2Input}
+              onChange={(e) => setTeam2Input(e.target.value)}
+              onKeyPress={handleKeyPress}
+              disabled={gameEnded}
+              placeholder={t.enterScore}
+              className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-lg disabled:bg-slate-50 disabled:cursor-not-allowed transition-colors"
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <button
             onClick={addRound}
             disabled={gameEnded || (!team1Input && !team2Input)}
-            className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white px-6 py-5 rounded-2xl font-bold text-base hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-105 disabled:from-slate-700 disabled:to-slate-800 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100 transition-all duration-200 flex items-center justify-center gap-2 border border-blue-400/20"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl font-semibold text-base hover:from-blue-700 hover:to-blue-800 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <Plus className="w-5 h-5" />
             <span>{t.addRound}</span>
@@ -219,7 +203,7 @@ function App() {
           <button
             onClick={goBackOneRound}
             disabled={rounds.length === 0}
-            className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 text-white px-6 py-5 rounded-2xl font-bold text-base hover:shadow-2xl hover:shadow-orange-500/50 hover:scale-105 disabled:from-slate-700 disabled:to-slate-800 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100 transition-all duration-200 flex items-center justify-center gap-2 border border-orange-400/20"
+            className="bg-orange-600 text-white px-6 py-4 rounded-xl font-semibold text-base hover:bg-orange-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <Undo2 className="w-5 h-5" />
             <span>{t.goBack}</span>
@@ -228,7 +212,7 @@ function App() {
           <button
             onClick={shareResults}
             disabled={rounds.length === 0}
-            className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white px-6 py-5 rounded-2xl font-bold text-base hover:shadow-2xl hover:shadow-emerald-500/50 hover:scale-105 disabled:from-slate-700 disabled:to-slate-800 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100 transition-all duration-200 flex items-center justify-center gap-2 border border-emerald-400/20"
+            className="bg-green-600 text-white px-6 py-4 rounded-xl font-semibold text-base hover:bg-green-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <Share2 className="w-5 h-5" />
             <span>{t.shareResults}</span>
@@ -237,7 +221,7 @@ function App() {
           <button
             onClick={resetGame}
             disabled={rounds.length === 0}
-            className="bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 text-white px-6 py-5 rounded-2xl font-bold text-base hover:shadow-2xl hover:shadow-slate-500/50 hover:scale-105 disabled:from-slate-700 disabled:to-slate-800 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100 transition-all duration-200 flex items-center justify-center gap-2 border border-slate-500/20"
+            className="bg-slate-600 text-white px-6 py-4 rounded-xl font-semibold text-base hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <RotateCcw className="w-5 h-5" />
             <span>{t.reset}</span>
@@ -245,35 +229,35 @@ function App() {
         </div>
 
         {rounds.length > 0 && (
-          <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 overflow-hidden">
-            <div className="bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 px-8 py-5">
-              <h3 className="text-2xl font-black text-slate-100">{t.roundsHistory}</h3>
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+            <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-6 py-4">
+              <h3 className="text-xl font-bold text-white">{t.roundsHistory}</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-900/50 border-b border-slate-700/50">
+                <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th className={`px-8 py-5 ${isRTL ? 'text-right' : 'text-left'} text-sm font-bold text-slate-300 uppercase tracking-wide`}>
+                    <th className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'} text-sm font-semibold text-slate-700`}>
                       {t.round}
                     </th>
-                    <th className="px-8 py-5 text-center text-sm font-bold text-slate-300 uppercase tracking-wide">
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">
                       {t.team1}
                     </th>
-                    <th className="px-8 py-5 text-center text-sm font-bold text-slate-300 uppercase tracking-wide">
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">
                       {t.team2}
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-700/30">
+                <tbody className="divide-y divide-slate-100">
                   {[...rounds].reverse().map((round) => (
-                    <tr key={round.id} className="hover:bg-slate-700/20 transition-colors">
-                      <td className={`px-8 py-5 text-sm font-bold text-slate-400 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    <tr key={round.id} className="hover:bg-slate-50 transition-colors">
+                      <td className={`px-6 py-4 text-sm font-medium text-slate-900 ${isRTL ? 'text-right' : 'text-left'}`}>
                         {t.round} {round.round_number}
                       </td>
-                      <td className="px-8 py-5 text-center text-xl font-black text-slate-200">
+                      <td className="px-6 py-4 text-center text-lg font-semibold text-slate-800">
                         {round.team1_score}
                       </td>
-                      <td className="px-8 py-5 text-center text-xl font-black text-slate-200">
+                      <td className="px-6 py-4 text-center text-lg font-semibold text-slate-800">
                         {round.team2_score}
                       </td>
                     </tr>
@@ -285,23 +269,21 @@ function App() {
         )}
 
         {rounds.length === 0 && (
-          <div className="text-center py-16 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50">
-            <p className="text-slate-400 text-xl font-semibold">{t.noRoundsYet}</p>
+          <div className="text-center py-12 bg-white rounded-2xl shadow-lg border border-slate-200">
+            <p className="text-slate-400 text-lg">{t.noRoundsYet}</p>
           </div>
         )}
       </div>
 
-      <footer className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700/50 py-8 mt-12">
-        <div className="container mx-auto px-4 max-w-6xl">
+      <footer className="bg-white border-t border-slate-200 py-6 mt-8">
+        <div className="container mx-auto px-4 max-w-5xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl">
-                <Trophy className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-black bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent">{t.title}</span>
+              <Trophy className="w-8 h-8 text-amber-500" />
+              <span className="text-lg font-bold text-slate-800">{t.title}</span>
             </div>
             <div className="text-center md:text-right">
-              <p className="text-slate-400 font-semibold">{t.poweredBy}</p>
+              <p className="text-slate-600 font-medium">{t.poweredBy}</p>
             </div>
           </div>
         </div>
