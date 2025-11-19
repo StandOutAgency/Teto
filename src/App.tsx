@@ -14,7 +14,7 @@ function App() {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>('ar');
 
   const t = translations[language];
   const isRTL = language === 'ar';
