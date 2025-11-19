@@ -99,9 +99,9 @@ function App() {
 
       <div className="container mx-auto px-4 py-8 max-w-5xl flex-1">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-2 mt-12"> 
+          <div className="flex items-center justify-center gap-3 mb-2 mt-12">
             <Trophy className="w-10 h-10 text-amber-500" />
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+            <h1 className="text-6xl font-extrabold text-slate-900">
               {t.title}
             </h1>
           </div>
