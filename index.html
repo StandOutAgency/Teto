@@ -5,37 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Teto Score Game Tracker</title>
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RC07P73KMS"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag("js", new Date());
-      gtag("config", "G-RC07P73KMS");
-    </script>
-
-    <!-- reCAPTCHA -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   </head>
-
   <body>
     <div id="root"></div>
-
-    <!-- Example Form with reCAPTCHA -->
-    <form id="contact-form" style="margin-top: 20px;">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-
-      <!-- reCAPTCHA widget -->
-      <div
-        class="g-recaptcha"
-        data-sitekey="6LdBxhcsAAAAAN2M2zAZrzZhm5zNp194IwWhltdx"
-      ></div>
-
-      <button type="submit">Send</button>
-    </form>
-
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
