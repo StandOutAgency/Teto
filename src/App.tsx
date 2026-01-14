@@ -27,12 +27,15 @@ function App() {
   const team1Progress = Math.min((team1Total / 250) * 100, 100);
   const team2Progress = Math.min((team2Total / 250) * 100, 100);
 
+  // Ensures ONLY digits are stored (typed or pasted)
+  const digitsOnly = (value: string) => value.replace(/[^\d]/g, '');
+
   const addRound = () => {
     if (!team1Input && !team2Input) return;
     if (gameEnded) return;
 
-    const team1Score = team1Input ? parseInt(team1Input) : 0;
-    const team2Score = team2Input ? parseInt(team2Input) : 0;
+    const team1Score = team1Input ? parseInt(team1Input, 10) : 0;
+    const team2Score = team2Input ? parseInt(team2Input, 10) : 0;
 
     if (isNaN(team1Score) || isNaN(team2Score)) return;
 
@@ -59,26 +62,28 @@ function App() {
     setRounds(rounds.slice(0, -1));
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert(language === 'en' ? 'Results copied to clipboard!' : 'تم نسخ النتائج!');
+    });
+  };
+
   const shareResults = () => {
     const winnerText = winner ? `${winner === 1 ? t.team1 : t.team2} ${t.winMessage}` : t.progress;
     const shareText = `${t.title}\n${winnerText}\n${t.finalScore}: ${team1Total} - ${team2Total}`;
 
     if (navigator.share) {
-      navigator.share({
-        title: t.title,
-        text: shareText,
-      }).catch(() => {
-        copyToClipboard(shareText);
-      });
+      navigator
+        .share({
+          title: t.title,
+          text: shareText,
+        })
+        .catch(() => {
+          copyToClipboard(shareText);
+        });
     } else {
       copyToClipboard(shareText);
     }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert(language === 'en' ? 'Results copied to clipboard!' : 'تم نسخ النتائج!');
-    });
   };
 
   const getScoreColor = (team: 1 | 2) => {
@@ -87,23 +92,24 @@ function App() {
     return team2Total > team1Total ? 'text-emerald-600' : 'text-red-600';
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !gameEnded) {
       addRound();
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div
+      className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col"
+      dir={isRTL ? 'rtl' : 'ltr'}
+    >
       <LanguageSwitcher currentLanguage={language} onLanguageChange={setLanguage} />
 
       <div className="container mx-auto px-4 py-8 max-w-5xl flex-1">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-2 mt-12">
             <Trophy className="w-10 h-10 text-amber-500" />
-            <h1 className="text-6xl font-bold text-slate-900">
-              {t.title}
-            </h1>
+            <h1 className="text-6xl font-bold text-slate-900">{t.title}</h1>
           </div>
           <p className="text-sm text-slate-500 mt-2">{t.rulesMessage}</p>
         </div>
@@ -112,7 +118,9 @@ function App() {
           <div className="bg-gradient-to-r from-amber-400 to-amber-500 text-white rounded-2xl p-6 mb-8 text-center shadow-xl">
             <Trophy className="w-16 h-16 mx-auto mb-3" />
             <div className="space-y-1">
-              <h2 className="text-3xl font-bold">{winner === 1 ? t.team1 : t.team2} {t.winMessage}</h2>
+              <h2 className="text-3xl font-bold">
+                {winner === 1 ? t.team1 : t.team2} {t.winMessage}
+              </h2>
               <p className="text-amber-50">
                 {t.finalScore}: {team1Total} - {team2Total}
               </p>
@@ -128,6 +136,7 @@ function App() {
               <span>{t.target}</span>
             </div>
           </div>
+
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -136,11 +145,16 @@ function App() {
               </div>
               <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 ${team1Total > team2Total ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-red-600'}`}
+                  className={`h-full transition-all duration-500 ${
+                    team1Total > team2Total
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                      : 'bg-gradient-to-r from-red-500 to-red-600'
+                  }`}
                   style={{ width: `${team1Progress}%` }}
                 />
               </div>
             </div>
+
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-slate-700">{t.team2}</span>
@@ -148,7 +162,11 @@ function App() {
               </div>
               <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 ${team2Total > team1Total ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-red-500 to-red-600'}`}
+                  className={`h-full transition-all duration-500 ${
+                    team2Total > team1Total
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                      : 'bg-gradient-to-r from-red-500 to-red-600'
+                  }`}
                   style={{ width: `${team2Progress}%` }}
                 />
               </div>
@@ -159,14 +177,16 @@ function App() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
             <h2 className="text-2xl font-bold text-slate-800 mb-3">{t.team1}</h2>
-            <div className={`text-6xl font-bold mb-4 ${getScoreColor(1)} transition-colors`}>
-              {team1Total}
-            </div>
+            <div className={`text-6xl font-bold mb-4 ${getScoreColor(1)} transition-colors`}>{team1Total}</div>
+
+            {/* Numeric keyboard + digits-only */}
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={team1Input}
-              onChange={(e) => setTeam1Input(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onChange={(e) => setTeam1Input(digitsOnly(e.target.value))}
+              onKeyDown={handleKeyDown}
               disabled={gameEnded}
               placeholder={t.enterScore}
               className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-lg disabled:bg-slate-50 disabled:cursor-not-allowed transition-colors"
@@ -175,14 +195,16 @@ function App() {
 
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
             <h2 className="text-2xl font-bold text-slate-800 mb-3">{t.team2}</h2>
-            <div className={`text-6xl font-bold mb-4 ${getScoreColor(2)} transition-colors`}>
-              {team2Total}
-            </div>
+            <div className={`text-6xl font-bold mb-4 ${getScoreColor(2)} transition-colors`}>{team2Total}</div>
+
+            {/* Numeric keyboard + digits-only */}
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={team2Input}
-              onChange={(e) => setTeam2Input(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onChange={(e) => setTeam2Input(digitsOnly(e.target.value))}
+              onKeyDown={handleKeyDown}
               disabled={gameEnded}
               placeholder={t.enterScore}
               className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 text-lg disabled:bg-slate-50 disabled:cursor-not-allowed transition-colors"
@@ -233,33 +255,29 @@ function App() {
             <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-6 py-4">
               <h3 className="text-xl font-bold text-white">{t.roundsHistory}</h3>
             </div>
+
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'} text-sm font-semibold text-slate-700`}>
+                    <th
+                      className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'} text-sm font-semibold text-slate-700`}
+                    >
                       {t.round}
                     </th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">
-                      {t.team1}
-                    </th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">
-                      {t.team2}
-                    </th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">{t.team1}</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-slate-700">{t.team2}</th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-slate-100">
                   {[...rounds].reverse().map((round) => (
                     <tr key={round.id} className="hover:bg-slate-50 transition-colors">
                       <td className={`px-6 py-4 text-sm font-medium text-slate-900 ${isRTL ? 'text-right' : 'text-left'}`}>
                         {t.round} {round.round_number}
                       </td>
-                      <td className="px-6 py-4 text-center text-lg font-semibold text-slate-800">
-                        {round.team1_score}
-                      </td>
-                      <td className="px-6 py-4 text-center text-lg font-semibold text-slate-800">
-                        {round.team2_score}
-                      </td>
+                      <td className="px-6 py-4 text-center text-lg font-semibold text-slate-800">{round.team1_score}</td>
+                      <td className="px-6 py-4 text-center text-lg font-semibold text-slate-800">{round.team2_score}</td>
                     </tr>
                   ))}
                 </tbody>
